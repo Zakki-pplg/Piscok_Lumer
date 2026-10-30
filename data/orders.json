@@ -1,0 +1,22 @@
+[
+    {
+        "kode": "PL26102806543970",
+        "waktu": "2026-10-28 06:54:39",
+        "akun": "sulthanfakhrimuzzaki@gmail.com",
+        "nama": "Zac",
+        "hp": "02",
+        "alamat": "jj",
+        "bayar": "QRIS",
+        "catatan": "",
+        "items": [
+            {
+                "name": "Piscok Cokelat Lumer",
+                "qty": 1,
+                "price": 14000,
+                "sub": 14000
+            }
+        ],
+        "total": 14000,
+        "status": "Menunggu konfirmasi"
+    }
+]
