@@ -1,6 +1,6 @@
 <?php
 /* =====================================================
-   API.PHP — backend AJAX: register, login, logout, checkout
+   API.PHP — backend AJAX: register, login, logout, rate, checkout
    ===================================================== */
 require __DIR__ . '/config.php';
 
@@ -91,9 +91,10 @@ if ($a === 'checkout') {
     $nama = trim($in['nama'] ?? ''); $hp = trim($in['hp'] ?? ''); $alamat = trim($in['alamat'] ?? '');
     if (!$lines) out(['ok' => false, 'msg' => 'Keranjang kosong.']);
     if ($nama === '' || $hp === '' || $alamat === '') out(['ok' => false, 'msg' => 'Lengkapi nama, no. HP, dan alamat.']);
-    /* ---- bukti pembayaran: wajib untuk Transfer Bank, QRIS, E-Wallet ---- */
+    if (!preg_match('/^[0-9]{9,15}$/', $hp)) out(['ok' => false, 'msg' => 'No. HP hanya boleh berisi angka (9 sampai 15 digit).']);
+    /* ---- bukti pembayaran: wajib untuk QRIS (COD tidak perlu) ---- */
     $bayar = trim($in['bayar'] ?? 'COD (Bayar di tempat)');
-    $metodeQr = ['Transfer Bank', 'QRIS', 'E-Wallet'];
+    $metodeQr = ['QRIS'];
     if ($bayar !== 'COD (Bayar di tempat)' && !in_array($bayar, $metodeQr, true))
         out(['ok' => false, 'msg' => 'Metode pembayaran tidak valid.']);
     $perluBukti = in_array($bayar, $metodeQr, true);

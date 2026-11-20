@@ -1,8 +1,10 @@
 <?php
 require __DIR__ . '/config.php';
 /* halaman tujuan setelah login (hanya yang diizinkan) */
-$allowed = ['index.php', 'menu.php', 'order.php', 'checkout.php', 'kontak.php', 'tentang.php'];
-$next = in_array($_GET['next'] ?? '', $allowed, true) ? $_GET['next'] : 'index.php';
+$allowed = ['index.php', 'menu.php', 'kontak.php', 'tentang.php'];
+$req  = $_GET['next'] ?? '';
+/* detail menu: detail.php?id=<angka> */
+$next = (in_array($req, $allowed, true) || preg_match('/^detail\.php\?id=\d{1,3}$/', $req)) ? $req : 'index.php';
 if ($user) { $_SESSION['intro_done'] = true; header('Location: ' . $next); exit; }
 ?>
 <!DOCTYPE html>
@@ -13,6 +15,7 @@ if ($user) { $_SESSION['intro_done'] = true; header('Location: ' . $next); exit;
 <title>Login — <?= STORE_NAME ?></title>
 <link rel="icon" type="image/png" href="assets/img/logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="p-login">
@@ -20,7 +23,7 @@ if ($user) { $_SESSION['intro_done'] = true; header('Location: ' . $next); exit;
   <div class="login-left">
    <div>
     <img src="assets/img/logo.png" alt="Logo <?= STORE_NAME ?>">
-    <h2>Halo, Pecinta Piscok! 🍫</h2>
+    <h2>Halo, Pecinta Piscok!</h2>
     <p>Masuk untuk checkout pesanan dengan cepat dan simpan riwayat order Anda.</p>
    </div>
   </div>
@@ -34,7 +37,7 @@ if ($user) { $_SESSION['intro_done'] = true; header('Location: ' . $next); exit;
     <div class="field"><label>Email</label><input id="aEmail" type="email" placeholder="email@contoh.com"></div>
     <div class="field"><label>Password</label><input id="aPass" type="password" placeholder="Minimal 6 karakter"></div>
     <button class="btn btn-primary btn-block" id="authBtn" onclick="submitAuth()">Masuk</button>
-    <a class="back" href="index.php?masuk=1">← Lanjut tanpa login</a>
+    <a class="back" href="index.php?masuk=1"><i class="bx bx-left-arrow-alt"></i> Lanjut tanpa login</a>
    </div>
   </div>
  </div>
