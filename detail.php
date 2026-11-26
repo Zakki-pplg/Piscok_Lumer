@@ -300,6 +300,8 @@ function compressImage(file, maxSide = 1600, quality = 0.85) {
     img.src = url;
   });
 }
+const MAX_PROOF_BYTES = 5 * 1024 * 1024;      // batas upload bukti: 5 MB (sama dengan batas di api.php)
+const MIN_ALAMAT_KATA = 6;                    // alamat harus lebih dari 5 kata
 const fmtSize = n => n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(1) + ' MB';
 function showMsg(t) {
   const m = $('coMsg'); m.className = 'msg err'; m.textContent = t;
@@ -314,7 +316,9 @@ $('proofClear').onclick = clearProof;
 $('proofFile').addEventListener('change', async e => {
   const f = e.target.files[0]; if (!f) return;
   if (!f.type.startsWith('image/')) { clearProof(); showMsg('Pilih file foto (JPG, PNG, atau WEBP).'); return; }
+  if (f.size > MAX_PROOF_BYTES) { clearProof(); showMsg('Ukuran foto terlalu besar (' + fmtSize(f.size) + '). Maksimal 5 MB, pilih foto yang lebih kecil.'); return; }
   proofFile = await compressImage(f);
+  if (proofFile.size > MAX_PROOF_BYTES) { clearProof(); showMsg('Ukuran foto terlalu besar. Maksimal 5 MB, pilih foto yang lebih kecil.'); return; }
   $('proofImg').src = URL.createObjectURL(proofFile);
   $('proofName').textContent = f.name;
   $('proofSize').textContent = fmtSize(proofFile.size);
@@ -356,6 +360,11 @@ $('doneWA').addEventListener('click', async e => {
 async function submitOrder() {
   const bayar = selectedPay(), needProof = PAY_QR.includes(bayar), btn = $('btnPesan');
   if (needProof && !proofFile) { showMsg('Upload foto bukti pembayaran dulu ya.'); return; }
+  const kata = $('coAlamat').value.trim().split(/\s+/).filter(w => /[\p{L}\p{N}]/u.test(w)).length;
+  if (kata < MIN_ALAMAT_KATA) {
+    showMsg('Alamat terlalu singkat. Tulis alamat lengkap lebih dari 5 kata (jalan, nomor rumah, RT/RW, kelurahan/kecamatan).');
+    $('coAlamat').focus(); return;
+  }
 
   const data = {
     items: [{ id: PID, qty }],

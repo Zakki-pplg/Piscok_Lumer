@@ -91,6 +91,9 @@ if ($a === 'checkout') {
     $nama = trim($in['nama'] ?? ''); $hp = trim($in['hp'] ?? ''); $alamat = trim($in['alamat'] ?? '');
     if (!$lines) out(['ok' => false, 'msg' => 'Keranjang kosong.']);
     if ($nama === '' || $hp === '' || $alamat === '') out(['ok' => false, 'msg' => 'Lengkapi nama, no. HP, dan alamat.']);
+    /* alamat harus lebih dari 5 kata (kata = potongan teks yang berisi huruf/angka) agar tidak diisi asal */
+    $kata = array_filter(preg_split('/\s+/u', $alamat, -1, PREG_SPLIT_NO_EMPTY), fn($w) => preg_match('/[\p{L}\p{N}]/u', $w));
+    if (count($kata) < 6) out(['ok' => false, 'msg' => 'Alamat terlalu singkat. Tulis alamat lengkap lebih dari 5 kata (jalan, nomor rumah, RT/RW, kelurahan/kecamatan).']);
     if (!preg_match('/^[0-9]{9,15}$/', $hp)) out(['ok' => false, 'msg' => 'No. HP hanya boleh berisi angka (9 sampai 15 digit).']);
     /* ---- bukti pembayaran: wajib untuk QRIS (COD tidak perlu) ---- */
     $bayar = trim($in['bayar'] ?? 'COD (Bayar di tempat)');
